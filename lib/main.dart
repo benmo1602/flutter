@@ -14,7 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Startup Name Generator',
-      home: RandomWords(),
+      theme: new ThemeData(          // 新增代码开始...
+        primaryColor: Colors.blue,
+      ),                             // ... 代码新增结束
+      home: new RandomWords(),
     );
   }
   // #enddocregion build
@@ -25,6 +28,7 @@ class MyApp extends StatelessWidget {
 class RandomWordsState extends State<RandomWords> {
   final _suggestions = <WordPair>[];
   final _biggerFont = const TextStyle(fontSize: 18.0);
+  final Set<WordPair> _saved = new Set<WordPair>();   // 新增本行
   // #enddocregion RWS-var
 
   // #docregion _buildSuggestions
@@ -45,11 +49,25 @@ class RandomWordsState extends State<RandomWords> {
 
   // #docregion _buildRow
   Widget _buildRow(WordPair pair) {
-    return ListTile(
-      title: Text(
+    final bool alreadySaved = _saved.contains(pair);
+    return new ListTile(
+      title: new Text(
         pair.asPascalCase,
         style: _biggerFont,
       ),
+      trailing: new Icon(   // 新增代码开始 ...
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.blue : null,
+      ),
+      onTap: () {      // 增加如下 9 行代码...
+        setState(() {
+          if (alreadySaved) {
+            _saved.remove(pair);
+          } else {
+            _saved.add(pair);
+          }
+        });
+      },
     );
   }
   // #enddocregion _buildRow
