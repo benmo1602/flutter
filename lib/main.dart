@@ -3,91 +3,85 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
+import 'package:my_app/widget/random_words.dart';
 
-void main() => runApp(MyApp());
+/**
+ * 入口函数
+ */
 
-// #docregion MyApp
+
+void main() {
+  return runApp(MyApp());
+}
+
+/**
+ * 定义一个 MyApp Widget
+ */
+// stl 无状态
 class MyApp extends StatelessWidget {
   // #docregion build
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Startup Name Generator',
-      theme: new ThemeData(          // 新增代码开始...
+      title: '测试列表',
+      theme: new ThemeData(
+        // 新增代码开始...·
         primaryColor: Colors.blue,
-      ),                             // ... 代码新增结束
-      home: new RandomWords(),
+      ), // ... 代码新增结束
+      home: MyHomePage(title: 'h9 APP ceshi'),
+      routes: routers,
     );
   }
   // #enddocregion build
 }
+
 // #enddocregion MyApp
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
 
-// #docregion RWS-var
-class RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _biggerFont = const TextStyle(fontSize: 18.0);
-  final Set<WordPair> _saved = new Set<WordPair>();   // 新增本行
-  // #enddocregion RWS-var
+  final String title;
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  // #docregion _buildSuggestions
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider(); /*2*/
-
-          final index = i ~/ 2; /*3*/
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
-          }
-          return _buildRow(_suggestions[index]);
-        });
-  }
-  // #enddocregion _buildSuggestions
-
-  // #docregion _buildRow
-  Widget _buildRow(WordPair pair) {
-    final bool alreadySaved = _saved.contains(pair);
-    return new ListTile(
-      title: new Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-      trailing: new Icon(   // 新增代码开始 ...
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.blue : null,
-      ),
-      onTap: () {      // 增加如下 9 行代码...
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
-    );
-  }
-  // #enddocregion _buildRow
-
-  // #docregion RWS-build
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    var routeLists = routers.keys.toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text('Startup Name Generator'),
+        title: Text(widget.title),
       ),
-      body: _buildSuggestions(),
+      body: new Container(
+        child: new ListView.builder(
+          itemBuilder: (context, index) {
+            return new InkWell(
+              onTap: () {
+                Navigator.of(context).pushNamed(routeLists[index]);
+              },
+              child: new Card(
+                child: new Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.symmetric(horizontal: 10),
+                  height: 50,
+                  child: new Text(routerName[index]),
+                ),
+              ),
+            );
+          },
+          itemCount: routers.length,
+        ),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-  // #enddocregion RWS-build
-  // #docregion RWS-var
 }
-// #enddocregion RWS-var
 
-class RandomWords extends StatefulWidget {
-  @override
-  RandomWordsState createState() => RandomWordsState();
-}
+const routerName = [
+  "randomWords 例子",
+];
+
+Map<String, WidgetBuilder> routers = {
+  "widget/randomWords": (context) {
+    return new RandomWords();
+  },
+};
